@@ -9,6 +9,8 @@ st.sidebar.success("Selectionner une page.")
 # Titre de l'application
 st.title("Analyse des Résultats des Épreuves - EFE Maroc")
 
+st.divider()
+
 # Introduction
 st.markdown("""
 Cette application permet d'analyser les résultats des épreuves du Baccalauréat et du Diplôme National du Brevet (DNB) pour les établissements EFE Maroc.
