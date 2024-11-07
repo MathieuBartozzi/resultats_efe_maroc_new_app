@@ -263,7 +263,7 @@ with col1:
         st.write("Dans les graphiques ci-dessus, le point rouge représente l'établissement que vous avez sélectionné, tandis que les points bleus représentent les autres établissements. Ce positionnement permet de situer les performances de l'établissement choisi par rapport aux autres dans chaque paire d'épreuves corrélées. Si le point rouge se trouve vers le haut ou la droite du graphique, cela indique que cet établissement a des performances supérieures dans l'épreuve correspondante. Inversement, un point rouge en bas ou à gauche signifie que les scores de l'établissement sont inférieurs à ceux de la plupart des autres établissements.")
 
 with col2:
-    with st.popover('Voir les autres corréaltions'):
+    with st.popover('Voir les autres corrélations'):
         correlation_matrix = dnb_df_year_2024[subjects].corr()
         subjects = [
         "Français (sur 100)", "Hist. Géo.EMC (sur 50)", "Mathématiques (sur 100)",

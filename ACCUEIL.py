@@ -4,7 +4,7 @@ import streamlit as st
 st.set_page_config(
     page_title='Résultats EFE Maroc')
 
-# st.sidebar.success("Select a demo above.")
+st.sidebar.success("Selectionner une page au-dessus.")
 
 # Titre de l'application
 st.title("Analyse des Résultats des Épreuves - EFE Maroc")
