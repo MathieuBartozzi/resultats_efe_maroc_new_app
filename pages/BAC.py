@@ -140,7 +140,7 @@ def display_overall_average_chart_2024(overall_df, highlighted_etablissement):
         x="établissement",
         y="Moyenne",
         text="Moyenne",
-        title="Classement des moyennes globales par établissement pour 2024",
+        title="Classement des moyennes globales (EDS, GO, Philo) par établissement pour 2024",
         labels={"Moyenne": "Moyenne globale", "établissement": "Établissement"}
     )
 
