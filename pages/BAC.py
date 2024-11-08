@@ -60,7 +60,7 @@ def display_summary_chart(summary_df):
         x="Épreuve",
         y="Moyenne",
         color="Année",
-        title="Moyenne par épreuve (2023 vs 2024)",
+        title="Épreuves 2023 vs 2024",
         barmode="group",
         color_discrete_map=colors
     )
@@ -86,7 +86,7 @@ def display_speciality_chart(eds_speciality_df):
         y="spécialité",
         orientation="h",
         text="moyenne",
-        title="Classement des spécialités",
+        title="Moyenne des spécialités 2024",
         labels={"moyenne": "Moyenne des Notes", "spécialité": "Spécialité"}
     )
     fig.update_traces(marker_color=colors["2024"], textposition="outside")
@@ -140,7 +140,7 @@ def display_overall_average_chart_2024(overall_df, highlighted_etablissement):
         x="établissement",
         y="Moyenne",
         text="Moyenne",
-        title="Classement des moyennes globales (EDS, GO, Philo) par établissement pour 2024",
+        title="Moyennes globales (EDS, GO, Philo) 2024",
         labels={"Moyenne": "Moyenne globale", "établissement": "Établissement"}
     )
 
