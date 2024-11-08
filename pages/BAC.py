@@ -91,11 +91,72 @@ def display_speciality_chart(eds_speciality_df):
     )
     fig.update_traces(marker_color=colors["2024"], textposition="outside")
     fig.update_layout(
+        xaxis=dict(range=[10, 20]),
         yaxis=dict(categoryorder="total ascending"),
         xaxis_title=None,
         yaxis_title=None
     )
     st.plotly_chart(fig, use_container_width=True)
+
+
+# Fonction pour créer un DataFrame de moyennes globales par établissement pour l'année 2024
+def create_overall_summary_2024(philo_df, eds_df, go_df):
+    # Filtrer les données pour l'année 2024
+    philo_df_2024 = philo_df[philo_df['session'] == 2024]
+    eds_df_2024 = eds_df[eds_df['session'] == 2024]
+    go_df_2024 = go_df[go_df['session'] == 2024]
+
+    # Calculer les moyennes par établissement pour chaque épreuve pour 2024
+    philo_avg = philo_df_2024.groupby('établissement')['moyenne'].mean().reset_index()
+    eds_avg = eds_df_2024.groupby('établissement')['moyenne'].mean().reset_index()
+    go_avg = go_df_2024.groupby('établissement')['moyenne'].mean().reset_index()
+
+    # Renommer les colonnes pour éviter les conflits lors de la fusion
+    philo_avg.rename(columns={'moyenne': 'philo_moyenne'}, inplace=True)
+    eds_avg.rename(columns={'moyenne': 'eds_moyenne'}, inplace=True)
+    go_avg.rename(columns={'moyenne': 'go_moyenne'}, inplace=True)
+
+    # Fusionner les moyennes pour obtenir un DataFrame global
+    overall_df = philo_avg.merge(eds_avg, on='établissement', how='outer').merge(go_avg, on='établissement', how='outer')
+
+    # Calculer la moyenne globale par établissement en ignorant les NaN
+    overall_df['Moyenne'] = overall_df[['philo_moyenne', 'eds_moyenne', 'go_moyenne']].mean(axis=1, skipna=True).round(2)
+
+    return overall_df
+
+def display_overall_average_chart_2024(overall_df, highlighted_etablissement):
+    # Ajouter une colonne pour surbriller l'établissement sélectionné
+    overall_df['highlight'] = overall_df['établissement'] == highlighted_etablissement
+
+    # Trier par moyenne décroissante
+    overall_df = overall_df.sort_values(by='Moyenne', ascending=False).reset_index(drop=True)
+    overall_df['Rang'] = overall_df.index + 1  # Ajouter le rang
+
+
+
+    # Créer le graphique en barres verticales avec Plotly
+    fig = px.bar(
+        overall_df,
+        x="établissement",
+        y="Moyenne",
+        text="Moyenne",
+        title="Classement des moyennes globales par établissement pour 2024",
+        labels={"Moyenne": "Moyenne globale", "établissement": "Établissement"}
+    )
+
+    # Appliquer la couleur pour l'établissement mis en surbrillance
+    colors = ['#ff6347' if highlight else '#80c9e0' for highlight in overall_df['highlight']]
+    fig.update_traces(marker_color=colors, textposition='outside', texttemplate='%{text:.2f}')
+
+    colors = ['#ff6347' if highlight else '#80c9e0' for highlight in overall_df['highlight']]
+    fig.update_traces(marker_color=colors, textposition='outside')
+    fig.update_layout(
+        yaxis=dict(range=[0, 15]),
+        xaxis_title=None,
+        yaxis_title=None,
+        xaxis=dict(tickangle=45))
+
+    st.plotly_chart(fig)
 
 # Sélectionner un établissement pour le mettre en surbrillance dans la barre latérale
 with st.sidebar:
@@ -122,18 +183,38 @@ summary_df = pd.concat([summary_2023, summary_2024])
 
 # Préparation des moyennes par spécialité pour l'EDS (2024)
 eds_speciality_average = eds_df_year_2024.groupby('spécialité').agg({'moyenne': 'mean'}).reset_index()
+eds_speciality_average['moyenne'] = eds_speciality_average['moyenne'].round(1)  # Arrondir à 1 chiffre
 eds_speciality_average = eds_speciality_average.sort_values(by="moyenne", ascending=False)
 
 # Affichage des sous-titres et des graphiques
 st.subheader('Résultats tout établissements')
 
 # Créer deux colonnes pour les graphiques
+# Créer deux colonnes pour les graphiques
+# Créer les deux colonnes principales
 col1, col2 = st.columns(2)
-with col1:
-    display_summary_chart(summary_df)
 
+# Dans la première colonne principale, créer deux sous-colonnes
+with col1:
+    sub_col1, sub_col2 = st.columns(2)
+
+    with sub_col1:
+        # Afficher le graphique de comparaison des moyennes par épreuve et par année
+        display_summary_chart(summary_df)
+
+    with sub_col2:
+        # Afficher le graphique des moyennes par spécialité pour l'EDS
+        display_speciality_chart(eds_speciality_average)
+
+# Dans la deuxième colonne principale, afficher le graphique du classement
 with col2:
-    display_speciality_chart(eds_speciality_average)
+    # Création du résumé des moyennes par établissement pour l'année 2024
+    overall_df_2024 = create_overall_summary_2024(philo_df, eds_df, go_df)
+    # Appel de la fonction pour afficher le graphique pour l'année 2024 avec l'établissement mis en surbrillance
+    display_overall_average_chart_2024(overall_df_2024, highlighted_etablissement)
+
+
+
 
 
 ######################################
