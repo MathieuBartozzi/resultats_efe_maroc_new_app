@@ -126,6 +126,47 @@ def display_bar_chart(summary_df, title):
     )
     st.plotly_chart(fig, use_container_width=True)
 
+# Fonction pour calculer la somme des épreuves du DNB pour chaque établissement et afficher le classement
+@st.cache_data
+def calculate_total_scores(dnb_df, highlighted_etablissement):
+    # Calculer la somme des colonnes d'épreuves pour chaque établissement
+    dnb_df['total_score'] = dnb_df[subjects].sum(axis=1).round()
+
+    # Trier les établissements par score total de manière décroissante
+    total_score_summary = dnb_df[['établissement', 'total_score']].copy()
+    total_score_summary = total_score_summary.sort_values(by='total_score', ascending=False).reset_index(drop=True)
+
+    # Ajouter une colonne de rang pour chaque établissement
+    total_score_summary['rang'] = total_score_summary.index + 1
+
+    # Ajouter une colonne pour mettre en évidence l'établissement sélectionné
+    total_score_summary['highlight'] = total_score_summary['établissement'] == highlighted_etablissement
+
+    return total_score_summary
+
+# Fonction pour afficher le classement des établissements basé sur la somme des épreuves du DNB
+def display_total_score_ranking(total_score_summary):
+    fig = px.bar(
+        total_score_summary,
+        x="établissement",
+        y="total_score",
+        text="total_score",
+        labels={"total_score": "Score Total", "établissement": "Établissement"},
+        title="Classement des établissements basé sur la somme des épreuves du DNB",
+    )
+
+    # Mettre en surbrillance l'établissement sélectionné
+    fig.update_traces(marker_color=color_based_on_highlight(total_score_summary), textposition='outside')
+    fig.update_layout(
+        yaxis=dict(range=[0, 800]),
+        xaxis_title=None,
+        yaxis_title=None,
+        xaxis_tickangle=-45
+    )
+
+    # Afficher le graphique
+    st.plotly_chart(fig, use_container_width=True)
+
 
 st.title("Résultats DNB - EFE Maroc")
 st.divider()
@@ -171,6 +212,11 @@ def calculate_metrics(df_2024, df_2023, highlighted_etablissement, subject):
     return mean_2024, variation
 
 st.subheader(f'Résultats pour : {highlighted_etablissement}')
+
+
+# Calculer et afficher le classement des scores totaux
+total_score_summary = calculate_total_scores(dnb_df_year_2024, highlighted_etablissement)
+display_total_score_ranking(total_score_summary)
 
 # Affichage des informations pour chaque épreuve dans une grille 4x2
 rows = [subjects[:4], subjects[4:]]  # Diviser les épreuves en deux lignes de 4

@@ -98,9 +98,61 @@ def display_bar_chart(summary_df, title):
 # Créer le résumé pour les épreuves anticipées de français
 summary_df_eaf = create_summary_eaf(eaf_df_year_2023, eaf_df_year_2024)
 
+# Calcul des moyennes pour les épreuves EAF (écrit et oral) pour chaque établissement et affichage du classement
+@st.cache_data
+def calculate_average_eaf(eaf_df, highlighted_etablissement):
+    # Calculer la moyenne des scores Écrit et Oral pour chaque établissement
+    eaf_df['average_score'] = eaf_df[['écrit', 'oral']].mean(axis=1).round(2)  # Arrondi à deux décimales
+
+    # Trier les établissements par score moyen de manière décroissante
+    average_score_summary = eaf_df[['établissement', 'average_score']].copy()
+    average_score_summary = average_score_summary.sort_values(by='average_score', ascending=False).reset_index(drop=True)
+
+    # Ajouter une colonne de rang pour chaque établissement
+    average_score_summary['rang'] = average_score_summary.index + 1
+
+    # Ajouter une colonne pour mettre en évidence l'établissement sélectionné
+    average_score_summary['highlight'] = average_score_summary['établissement'] == highlighted_etablissement
+
+    return average_score_summary
+
+# Fonction pour afficher le classement des établissements basé sur la moyenne Écrit + Oral (barchart vertical)
+def display_average_score_ranking_vertical(average_score_summary):
+    fig = px.bar(
+        average_score_summary,
+        x="établissement",
+        y="average_score",
+        text="average_score",
+        labels={"average_score": "Score Moyen", "établissement": "Établissement"},
+        title="Classement des établissements basé sur la moyenne des épreuves Écrit + Oral",
+    )
+
+    # Mettre en surbrillance l'établissement sélectionné
+    fig.update_traces(marker_color=color_based_on_highlight(average_score_summary), textposition='outside')
+    fig.update_layout(
+        yaxis=dict(range=[0, 16]),
+        xaxis_title=None,
+        yaxis_title=None,
+        xaxis_tickangle=-45,  # Incline les étiquettes pour améliorer la lisibilité
+    )
+
+    # Afficher le graphique
+    st.plotly_chart(fig, use_container_width=True)
+
 # Affichage des résultats EAF en bar chart
 st.subheader("Résultats des épreuves anticipées de français (EAF)")
-display_bar_chart(summary_df_eaf, "Épreuves anticipées sur 20")
+
+col1, col2=st.columns([1,2])
+
+with col1:
+    display_bar_chart(summary_df_eaf, "Épreuves anticipées sur 20")
+
+with col2:
+    # Calculer et afficher le classement des scores moyens avec un graphique vertical
+    average_score_summary = calculate_average_eaf(eaf_df_year_2024, highlighted_etablissement_eaf)
+    display_average_score_ranking_vertical(average_score_summary)
+
+
 
 # Fonction pour calculer la moyenne et la variation pour EAF
 @st.cache_data
@@ -109,6 +161,7 @@ def calculate_metrics_eaf(df_2024, df_2023, highlighted_etablissement, subject):
     mean_2023 = df_2023[df_2023['établissement'] == highlighted_etablissement][subject].mean()
     variation = ((mean_2024 - mean_2023) / mean_2023 * 100) if mean_2023 != 0 else 0
     return mean_2024, variation
+
 
 # Affichage des résultats spécifiques pour l'établissement sélectionné
 st.subheader(f"Résultats pour l'établissement : {highlighted_etablissement_eaf} (EAF)")
