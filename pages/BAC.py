@@ -192,6 +192,8 @@ st.subheader('Résultats tout établissements')
 # Créer deux colonnes pour les graphiques
 # Créer deux colonnes pour les graphiques
 # Créer les deux colonnes principales
+
+
 col1, col2 = st.columns(2)
 
 # Dans la première colonne principale, créer deux sous-colonnes
