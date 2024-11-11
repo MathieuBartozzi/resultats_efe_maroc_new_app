@@ -34,7 +34,7 @@ def filter_data_by_year(df, year):
 # Sélectionner un établissement pour le mettre en surbrillance dans la barre latérale
 with st.sidebar:
     highlighted_etablissement_eaf = st.selectbox(
-        "Choisissez un établissement pour les épreuves anticipées de français (EAF) :",
+        "Choisissez un établissement pour les épreuves anticipées de français :",
         sorted(eaf_df['établissement'].unique())
     )
 
@@ -140,7 +140,7 @@ def display_average_score_ranking_vertical(average_score_summary):
     st.plotly_chart(fig, use_container_width=True)
 
 # Affichage des résultats EAF en bar chart
-st.subheader("Résultats des épreuves anticipées de français (EAF)")
+st.subheader("Résultats des épreuves anticipées de français")
 
 col1, col2=st.columns([1,2])
 
@@ -164,7 +164,7 @@ def calculate_metrics_eaf(df_2024, df_2023, highlighted_etablissement, subject):
 
 
 # Affichage des résultats spécifiques pour l'établissement sélectionné
-st.subheader(f"Résultats pour l'établissement : {highlighted_etablissement_eaf} (EAF)")
+st.subheader(f"Résultats pour l'établissement : {highlighted_etablissement_eaf}")
 
 # Création de la disposition à trois colonnes
 col1, col2, col3 = st.columns(3)
