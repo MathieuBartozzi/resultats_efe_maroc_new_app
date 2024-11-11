@@ -129,8 +129,14 @@ def display_bar_chart(summary_df, title):
 # Fonction pour calculer la somme des épreuves du DNB pour chaque établissement et afficher le classement
 @st.cache_data
 def calculate_total_scores(dnb_df, highlighted_etablissement):
+
+    columns_to_sum = [
+    "Français (sur 100)", "Hist. Géo.EMC (sur 50)", "Mathématiques (sur 100)",
+    "Sciences (sur 50)", "SO de projet (sur 100)",
+    "DNL Hist. Géo. arabe (sur 50)", "Langue de la section (sur 50)"]
+
     # Calculer la somme des colonnes d'épreuves pour chaque établissement
-    dnb_df['total_score'] = dnb_df[subjects].sum(axis=1).round()
+    dnb_df['total_score'] = dnb_df[columns_to_sum].sum(axis=1).round()
 
     # Trier les établissements par score total de manière décroissante
     total_score_summary = dnb_df[['établissement', 'total_score']].copy()
@@ -202,7 +208,6 @@ subjects = [
 ]
 
 
-
 # Fonction pour calculer la moyenne et la variation
 @st.cache_data
 def calculate_metrics(df_2024, df_2023, highlighted_etablissement, subject):
@@ -214,8 +219,12 @@ def calculate_metrics(df_2024, df_2023, highlighted_etablissement, subject):
 st.subheader(f'Résultats pour : {highlighted_etablissement}')
 
 
+
 # Calculer et afficher le classement des scores totaux
 total_score_summary = calculate_total_scores(dnb_df_year_2024, highlighted_etablissement)
+
+# st.dataframe(total_score_summary)
+
 display_total_score_ranking(total_score_summary)
 
 # Affichage des informations pour chaque épreuve dans une grille 4x2
