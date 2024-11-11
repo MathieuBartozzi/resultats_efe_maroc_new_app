@@ -164,7 +164,7 @@ def display_total_score_ranking(total_score_summary):
     # Mettre en surbrillance l'établissement sélectionné
     fig.update_traces(marker_color=color_based_on_highlight(total_score_summary), textposition='outside')
     fig.update_layout(
-        yaxis=dict(range=[0, 800]),
+        yaxis=dict(range=[0, 400]),
         xaxis_title=None,
         yaxis_title=None,
         xaxis_tickangle=-45
