@@ -132,8 +132,7 @@ def calculate_total_scores(dnb_df, highlighted_etablissement):
 
     columns_to_sum = [
     "Français (sur 100)", "Hist. Géo.EMC (sur 50)", "Mathématiques (sur 100)",
-    "Sciences (sur 50)", "SO de projet (sur 100)",
-    "DNL Hist. Géo. arabe (sur 50)", "Langue de la section (sur 50)"]
+    "Sciences (sur 50)", "SO de projet (sur 100)"]
 
     # Calculer la somme des colonnes d'épreuves pour chaque établissement
     dnb_df['total_score'] = dnb_df[columns_to_sum].sum(axis=1).round()
@@ -158,7 +157,7 @@ def display_total_score_ranking(total_score_summary):
         y="total_score",
         text="total_score",
         labels={"total_score": "Score Total", "établissement": "Établissement"},
-        title="Classement des établissements basé sur la somme des épreuves du DNB",
+        title="Classement des établissements basé sur la somme des épreuves finales : Mathématiques, Francais, Sciences, Histoire-Géographie EMC, Oral",
     )
 
     # Mettre en surbrillance l'établissement sélectionné
